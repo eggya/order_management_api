@@ -89,20 +89,33 @@ describe LineItemsController do
     end
 
     describe "with invalid params" do
-      it "assigns the line_item as @line_item" do
-        line_item = LineItem.create! valid_attributes
+      context "when order is draft" do
+        it "assigns the line_item as @line_item" do
+          line_item = LineItem.create! valid_attributes
 
-        LineItem.any_instance.stub(:save).and_return(false)
-        put :update, {:id => line_item.to_param, :line_item => { "quantity" => "invalid value" }}, valid_session
-        assigns(:line_item).should eq(line_item)
+          LineItem.any_instance.stub(:save).and_return(false)
+          put :update, {:id => line_item.to_param, :line_item => { "quantity" => "invalid value" }}, valid_session
+          assigns(:line_item).should eq(line_item)
+        end
+
+        it "response should not be success" do
+          line_item = LineItem.create! valid_attributes
+
+          LineItem.any_instance.stub(:save).and_return(false)
+          put :update, {:id => line_item.to_param, :line_item => { "quantity" => "invalid value" }}, valid_session
+          response.should_not be_success
+        end
       end
 
-      it "response should not be success" do
-        line_item = LineItem.create! valid_attributes
+      context "when order is not draft" do
+        it "response should not be success" do
+          line_item = LineItem.create! valid_attributes
+          @order.update_attribute(:status, 1)
 
-        LineItem.any_instance.stub(:save).and_return(false)
-        put :update, {:id => line_item.to_param, :line_item => { "quantity" => "invalid value" }}, valid_session
-        response.should_not be_success
+          LineItem.any_instance.stub(:save).and_return(false)
+          put :update, {:id => line_item.to_param, :line_item => { "quantity" => "invalid value" }}, valid_session
+          response.should_not be_success
+        end
       end
     end
   end

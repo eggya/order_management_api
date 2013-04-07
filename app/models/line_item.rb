@@ -7,11 +7,16 @@ class LineItem < ActiveRecord::Base
   belongs_to :order
   belongs_to :product
 
-  before_save     :calculate_net_price
+  before_save     :calculate_net_price, :order_is_changeable?
   after_save      :calculate_net_total, :calculate_gross_total
   before_destroy  :calculate_net_total, :calculate_gross_total
 
 private
+
+  # only line_item with draft order can be modified
+  def order_is_changeable?
+    order.status == 0
+  end
 
   # updates line_item's price according to qty
   def calculate_net_price
