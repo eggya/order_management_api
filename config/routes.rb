@@ -1,4 +1,6 @@
 OrderManagementApi::Application.routes.draw do
 
-  resources :products, except: [:new, :edit]
+  resources :line_items, except: [:new, :edit]
+  resources :orders,     except: [:new, :edit, :delete]
+  resources :products,   except: [:new, :edit]
 end
