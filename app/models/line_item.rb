@@ -11,6 +11,10 @@ class LineItem < ActiveRecord::Base
   after_save      :calculate_net_total, :calculate_gross_total
   before_destroy  :calculate_net_total, :calculate_gross_total
 
+  def product_name
+    product.name
+  end
+
 private
 
   # only line_item with draft order can be modified

@@ -2,14 +2,12 @@ class LineItemsController < ApplicationController
 
   def index
     @line_items = LineItem.all
-
-    render json: @line_items
+    render json: @line_items.to_json({:methods => :product_name})
   end
 
   def show
     @line_item = LineItem.find(params[:id])
-
-    render json: @line_item
+    render json: @line_item.to_json({:methods => :product_name})
   end
 
   def create
