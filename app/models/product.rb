@@ -7,4 +7,12 @@ class Product < ActiveRecord::Base
 
   has_many :orders, :through => :line_items
   has_many :line_items
+
+  before_destroy :check_related_orders
+
+private
+
+  def check_related_orders
+    return false if orders.count > 0
+  end
 end

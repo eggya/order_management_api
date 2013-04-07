@@ -101,17 +101,30 @@ describe ProductsController do
   end
 
   describe "DELETE destroy" do
-    it "destroys the requested product" do
-      product = Product.create! valid_attributes
-      expect {
+    context "without attached orders" do
+      it "destroys the requested product" do
+        product = Product.create! valid_attributes
+        expect {
+          delete :destroy, {:id => product.to_param}, valid_session
+        }.to change(Product, :count).by(-1)
+      end
+
+      it "response should be success" do
+        product = Product.create! valid_attributes
         delete :destroy, {:id => product.to_param}, valid_session
-      }.to change(Product, :count).by(-1)
+        response.should be_success
+      end
     end
 
-    it "response should be success" do
-      product = Product.create! valid_attributes
-      delete :destroy, {:id => product.to_param}, valid_session
-      response.should be_success
+    context "with attached orders" do
+      it "response should be success" do
+        product   = Product.create! valid_attributes
+        order     = Factory(:order)
+        line_item = LineItem.create! :product_id => product.id, :order_id => order.id, :quantity => 1
+
+        delete :destroy, {:id => product.to_param}, valid_session
+        response.should be_success
+      end
     end
   end
 
