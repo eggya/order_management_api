@@ -6,4 +6,15 @@ class LineItem < ActiveRecord::Base
 
   belongs_to :order
   belongs_to :product
+
+  before_save :calculate_net_total
+
+private
+
+  def calculate_net_total
+    self.net_total = quantity * Product.find(product_id).price
+  rescue
+    errors.add(:product, "is not valid")
+    false
+  end
 end

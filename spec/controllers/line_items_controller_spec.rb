@@ -60,7 +60,7 @@ describe LineItemsController do
 
       it "response should not be success" do
         LineItem.any_instance.stub(:save).and_return(false)
-        post :create, {:line_item => { "quantity" => "invalid value" }}, valid_session
+        post :create, {:line_item => { "quantity" => "invalid value", "product_id" => "invalid_value" }}, valid_session
         response.should_not be_success
       end
     end
