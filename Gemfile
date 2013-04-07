@@ -6,6 +6,7 @@ gem 'rails-api', '~> 0.1.0'
 
 group :test, :development do
   gem "rspec-rails", "~> 2.0"
+  gem 'shoulda-matchers'
 end
 
 group :test do
