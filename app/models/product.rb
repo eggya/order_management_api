@@ -12,6 +12,7 @@ class Product < ActiveRecord::Base
 
 private
 
+  # only products that are not in any order can be deleted
   def check_related_orders
     return false if orders.count > 0
   end
