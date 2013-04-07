@@ -4,5 +4,6 @@ Factory.define :product do |p|
 end
 
 Factory.define :order do |o|
-  o.status          1
+  o.status          0
+  o.order_date  	Date.today() - 1.day
 end

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ProductsController do
 
   def valid_attributes
-    { "name" => "MyString", "price" => 100 }
+    Factory.attributes_for(:product)
   end
 
   def valid_session

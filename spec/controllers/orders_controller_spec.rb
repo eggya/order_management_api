@@ -3,11 +3,11 @@ require 'spec_helper'
 describe OrdersController do
 
   def valid_attributes
-    { "status" => 1 }
+    Factory.attributes_for(:order)
   end
 
   def valid_session
-    {}
+    { 'order_date' => Date.today() + 1.day }
   end
 
   describe "GET index" do
