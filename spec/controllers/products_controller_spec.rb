@@ -122,8 +122,9 @@ describe ProductsController do
         order     = Factory(:order)
         line_item = LineItem.create! :product_id => product.id, :order_id => order.id, :quantity => 1
 
-        delete :destroy, {:id => product.to_param}, valid_session
-        response.should be_success
+        expect {
+          delete :destroy, {:id => product.to_param}, valid_session
+        }.to change(Product, :count).by(0)
       end
     end
   end

@@ -9,7 +9,9 @@ class LineItem < ActiveRecord::Base
 
   before_save     :calculate_net_price, :order_is_changeable?
   after_save      :calculate_net_total, :calculate_gross_total
-  before_destroy  :calculate_net_total, :calculate_gross_total
+
+  before_destroy  :order_is_changeable?
+  after_destroy   :calculate_net_total, :calculate_gross_total
 
   def product_name
     product.name

@@ -1,9 +1,10 @@
-class Order < ActiveRecord::Base
+  class Order < ActiveRecord::Base
   attr_accessible :status, :order_date, :description
 
   validates_presence_of :order_date
   validates_presence_of :description, :if => Proc.new{ |p| p.status == 3 }
-  
+  validates_numericality_of :status, :equal_to => 0, :on => :create
+
   validate :order_date_is_of_the_past
   validate :status_update, :on => :update, :if => Proc.new{ |p| p.status_changed? }
   validate :order_is_draft?, :on => :update
@@ -13,19 +14,29 @@ class Order < ActiveRecord::Base
 
   # performed as line_item saved
   def update_net_total
-    update_attribute( 
-      :net_total, line_items.collect(&:net_total).compact.inject{ |sum,price| sum += price }
-    )
+    update_attribute( :net_total, current_net_total )
   end
 
   # performed as line_item saved
   def update_gross_total
-    update_attribute(
-      :gross_total, net_total + (net_total * VAT)
-    )
+    update_attribute( :gross_total, current_gross_total )
   end
 
 private
+
+  # return most recent net total
+  def current_net_total
+    line_items.collect(&:net_total).compact.inject{ |sum,price| sum += price }
+  rescue
+    0
+  end
+
+  # return most recent gross total
+  def current_gross_total
+    current_net_total + (current_net_total * VAT)
+  rescue
+    0
+  end
 
   # only draft order can be modified
   def order_is_draft?
