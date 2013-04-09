@@ -12,4 +12,5 @@ end
 group :test do
   gem 'database_cleaner', '~>0.8.0'
   gem 'factory_girl_rails', '~>1.4.0'
+  gem 'simplecov', '~>0.7.1'
 end
