@@ -6,7 +6,7 @@
   validates_numericality_of :status, :equal_to => 0, :on => :create
 
   validate :order_date_is_of_the_past
-  validate :status_update, :on => :update, :if => Proc.new{ |p| p.status_changed? }
+  validate :status_update, :on => :update
   validate :order_is_draft?, :on => :update
 
   has_many :products, :through => :line_items
@@ -26,16 +26,14 @@ private
 
   # return most recent net total
   def current_net_total
-    line_items.collect(&:net_total).compact.inject{ |sum,price| sum += price }
-  rescue
-    0
+    current_net_total = line_items.collect(&:net_total).compact.inject{ |sum,price| sum += price }
+    return 0 if current_net_total.nil?
+    current_net_total
   end
 
   # return most recent gross total
   def current_gross_total
     current_net_total + (current_net_total * VAT)
-  rescue
-    0
   end
 
   # only draft order can be modified
@@ -52,11 +50,14 @@ private
   # status constant are stored on lib/initializer/constans.rb
   # STATUS = { 0 => 'Draft', 1 => 'Placed', 2 => 'Paid', 3 => 'Cancelled' }
   def status_update
-    case status_was
-      when 0 then return (status == 1 && line_items.length > 0) || (status == 3)
-      when 1 then return (status == 2) || (status == 3)
+    return unless self.status_changed?
+
+    case self.status_was
+      when 0 then return true if (status == 1 && line_items.length > 0) || (status == 3)
+      when 1 then return true if (status == 2) || (status == 3)
     end
-    
+
     errors.add(:status, "illegal activity")
+    false
   end
 end
